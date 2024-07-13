@@ -33,6 +33,13 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     && mv kubectl /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 
+# -- add -- Install Helm
+RUN curl -LO https://get.helm.sh/helm-$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)-linux-${TARGETARCH}.tar.gz \
+&& tar -zxvf helm-$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)-linux-${TARGETARCH}.tar.gz \
+&& mv linux-${TARGETARCH}/helm /usr/local/bin/helm \
+&& chmod +x /usr/local/bin/helm \
+&& rm helm-$(curl -s https://api.github.com/repos/helm/helm/releases/latest | jq -r .tag_name)-linux-${TARGETARCH}.tar.gz
+
 # -- add -- Install Teleport (tbot)
 ARG TELEPORT_PKG=teleport
 ARG BINDIR=/usr/local/bin
