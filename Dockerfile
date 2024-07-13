@@ -37,6 +37,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
 ARG TELEPORT_PKG=teleport
 ARG BINDIR=/usr/local/bin
 ARG VARDIR=/var/lib/teleport
+ARG TELEPORT_VERSION=16.0.4
 
 RUN TELEPORT_VERSION=$(curl -sL https://api.github.com/repos/gravitational/teleport/releases/latest | jq -r '.tag_name' | cut -c 2-)
 RUN curl -O https://cdn.teleport.dev/${TELEPORT_PKG}-v${TELEPORT_VERSION}-linux-${TARGETARCH}-bin.tar.gz
@@ -57,7 +58,9 @@ COPY --from=ghcr.io/spacelift-io/aws-cli-alpine /aws-cli-bin/ /usr/local/bin/
 RUN aws --version && \
     terragrunt --version && \
     python --version && \
-    infracost --version
+    infracost --version && \
+    kubectl version --client=true && \
+    tbot version
 
 USER spacelift
 
@@ -68,7 +71,9 @@ RUN gcloud components install gke-gcloud-auth-plugin
 RUN gcloud --version && \
     terragrunt --version && \
     python --version && \
-    infracost --version
+    infracost --version && \
+    kubectl version --client=true && \
+    tbot version
 
 USER spacelift
 
@@ -80,7 +85,7 @@ RUN az --version && \
     terragrunt --version && \
     python --version && \
     infracost --version && \
-    kubectl version && \
+    kubectl version --client=true && \
     tbot version
 
 USER spacelift
