@@ -30,8 +30,21 @@ RUN chmod 755 /bin/terragrunt
 
 # -- add -- Install kubectl
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" \
-    && mv kubectl /bin/kubectl \
-    && chmod +x /bin/kubectl
+    && mv kubectl /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl
+
+# -- add -- Install Teleport (tbot)
+ARG TELEPORT_PKG=teleport
+ARG BINDIR=/usr/local/bin
+ARG VARDIR=/var/lib/teleport
+
+RUN TELEPORT_VERSION=$(curl -sL https://api.github.com/repos/gravitational/teleport/releases/latest | jq -r '.tag_name' | cut -c 2-)
+RUN curl -O https://cdn.teleport.dev/${TELEPORT_PKG}-v${TELEPORT_VERSION}-linux-${TARGETARCH}-bin.tar.gz
+RUN tar -xvf ${TELEPORT_PKG}-v${TELEPORT_VERSION}-linux-${TARGETARCH}-bin.tar.gz
+RUN mkdir -p $VARDIR $BINDIR
+RUN cp -f ${TELEPORT_PKG}/tbot $BINDIR/ || exit 1
+RUN rm ${TELEPORT_PKG}-v${TELEPORT_VERSION}-linux-${TARGETARCH}-bin.tar.gz
+RUN rm -rf ${TELEPORT_PKG}
 
 RUN echo "hosts: files dns" > /etc/nsswitch.conf \
     && adduser --disabled-password --uid=1983 spacelift
@@ -61,9 +74,13 @@ USER spacelift
 
 FROM base AS azure
 
+RUN az aks install-cli
+
 RUN az --version && \
     terragrunt --version && \
     python --version && \
-    infracost --version
+    infracost --version && \
+    kubectl version && \
+    tbot version
 
 USER spacelift

@@ -14,6 +14,7 @@ docker buildx bake aws gcp azure
 # Specific to azure
 docker buildx bake azure
 
-# Run
-docker run -it ghcr.io/masakioui/spacelift-runner-terraform:azure-latest .
+# Pull & Run
+docker pull ghcr.io/masakioui/spacelift-runner-terraform:azure-latest
+docker run --rm -it --name azure-runner ghcr.io/masakioui/spacelift-runner-terraform:azure-latest bash
 ```
