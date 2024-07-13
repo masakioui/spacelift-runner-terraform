@@ -87,12 +87,19 @@ USER spacelift
 FROM base AS azure
 
 RUN az aks install-cli
+# "/tmp/tmp0tiux2zq/kubelogin.zip" from "https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin.zip"
+# RUN curl -LO "https://github.com/Azure/kubelogin/releases/download/$(curl -sL https://api.github.com/repos/Azure/kubelogin/releases/latest | jq -r .tag_name)/kubelogin.zip" \
+#     && unzip kubelogin.zip \
+#     && mv bin/linux_${TARGETARCH}/kubelogin /bin/kubelogin \
+#     && chmod +x /bin/kubelogin \
+#     && rm kubelogin.zip
 
 RUN az --version && \
     terragrunt --version && \
     python --version && \
     infracost --version && \
     kubectl version --client=true && \
+    helm version && \
     tbot version
 
 USER spacelift
