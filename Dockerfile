@@ -28,6 +28,11 @@ RUN tar -xzf /tmp/infracost.tar.gz -C /bin && \
 ADD "https://github.com/gruntwork-io/terragrunt/releases/latest/download/terragrunt_linux_${TARGETARCH}" /bin/terragrunt
 RUN chmod 755 /bin/terragrunt
 
+# -- add -- Install kubectl
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" \
+    && mv kubectl /bin/kubectl \
+    && chmod +x /bin/kubectl
+
 RUN echo "hosts: files dns" > /etc/nsswitch.conf \
     && adduser --disabled-password --uid=1983 spacelift
 
